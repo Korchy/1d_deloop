@@ -71,6 +71,14 @@ class Deloop:
         context.scene.objects.active = src_obj
         bpy.ops.object.mode_set(mode=mode)
 
+    @staticmethod
+    def ui(layout, context):
+        # ui panel
+        layout.operator(
+            operator='deloop.remove_edges',
+            icon='AUTOMERGE_ON'
+        )
+
 
 # OPERATORS
 
@@ -97,21 +105,23 @@ class Deloop_PT_panel(Panel):
     bl_category = '1D'
 
     def draw(self, context):
-        self.layout.operator(
-            operator='deloop.remove_edges',
-            icon='AUTOMERGE_ON'
+        Deloop.ui(
+            layout=self.layout,
+            context=context
         )
 
 
 # REGISTER
 
-def register():
+def register(ui=True):
     register_class(Deloop_OT_remove_edges)
-    register_class(Deloop_PT_panel)
+    if ui:
+        register_class(Deloop_PT_panel)
 
 
-def unregister():
-    unregister_class(Deloop_PT_panel)
+def unregister(ui=True):
+    if ui:
+        unregister_class(Deloop_PT_panel)
     unregister_class(Deloop_OT_remove_edges)
 
 
