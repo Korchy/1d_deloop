@@ -13,7 +13,7 @@ bl_info = {
     "name": "Deloop",
     "description": "Remove edges with linked faces that all have the same material.",
     "author": "Nikita Akimov, Paul Kotelevets",
-    "version": (1, 0, 0),
+    "version": (1, 0, 1),
     "blender": (2, 79, 0),
     "location": "View3D > Tool panel > 1D > Deloop",
     "doc_url": "https://github.com/Korchy/1d_deloop",
@@ -77,6 +77,8 @@ class Deloop:
 class Deloop_OT_remove_edges(Operator):
     bl_idname = 'deloop.remove_edges'
     bl_label = 'Deloop'
+    bl_description = ('Clean up edges connected to the inner vertices of a selected loop that has the same '
+                      'adjacent material')
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
