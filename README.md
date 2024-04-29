@@ -12,6 +12,14 @@ Blender version
 
 Version history
 -
+1.1.0
+- Added new functional - select for future manual dissolving edges that have same material on two linked faces and not:
+  - crease
+  - sharp
+  - seam
+  - bevel edge
+  - freestyle edge
+
 1.0.1
 - UI improving
 - Integrated to the NA 1D TOOLS
