@@ -12,6 +12,9 @@ Blender version
 
 Version history
 -
+1.2.0
+- Added "Same Mats Border" button - select all edges that has the same two materials on linked faces, as selected
+
 1.1.0
 - Added new functional - select for future manual dissolving edges that have same material on two linked faces and not:
   - crease
