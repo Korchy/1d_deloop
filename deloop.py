@@ -48,8 +48,10 @@ class Deloop:
         # process edges
         if similar:
             # all combinations of materials
-            mat_pairs = [set(face.material_index for face in edge.link_faces) for edge in bm.edges if edge.select
-                         and len(set(face.material_index for face in edge.link_faces)) > 1]
+            # Pavel Kotelevec - enable working with sama mats on both linked faces. In testing (may work not proper).
+            # mat_pairs = [set(face.material_index for face in edge.link_faces) for edge in bm.edges if edge.select
+            #              and len(set(face.material_index for face in edge.link_faces)) > 1]
+            mat_pairs = [set(face.material_index for face in edge.link_faces) for edge in bm.edges if edge.select]
             # get all materials id list
             mat_ids = set(itertools.chain(*mat_pairs))
             # deselect all edges
@@ -57,16 +59,18 @@ class Deloop:
             # select edges that have two materials from this list on linked faces
             for edge in bm.edges:
                 edge_mats = set(face.material_index for face in edge.link_faces)
-                if len(edge_mats) > 1:
-                    if all(item in mat_ids for item in edge_mats):
-                        edge.select = True
+                # if len(edge_mats) > 1:
+                #     if all(item in mat_ids for item in edge_mats):
+                #         edge.select = True
+                if all(item in mat_ids for item in edge_mats):
+                    edge.select = True
         else:
             # only pairs of materials
             # get pairs of material on edge faces (for selected edges)
             mat_pairs = set(
                 [frozenset(face.material_index for face in edge.link_faces) for edge in bm.edges if edge.select]
             )
-            mat_pairs = set(pair for pair in mat_pairs if len(pair) == 2)   # filter same material edges
+            # mat_pairs = set(pair for pair in mat_pairs if len(pair) == 2)   # filter same material edges
             # deselect all edges
             cls._deselect_all(bm=bm)
             # select edges with same materials on linked faces
@@ -250,6 +254,7 @@ class Deloop_OT_desolve_edges(Operator):
 class Deloop_OT_same_mats_border(Operator):
     bl_idname = 'deloop.same_mats_border'
     bl_label = 'Same Mats Border'
+    bl_description = 'Add to selection edges that borders the same materials'
     bl_options = {'REGISTER', 'UNDO'}
 
     similar = BoolProperty(
@@ -284,7 +289,8 @@ class Deloop_PT_panel(Panel):
 
 def register(ui=True):
     Scene.deloop_pref_same_mats_border_similar = BoolProperty(
-        name='Similar',
+        name='Combined',
+        description='Select edges that belongs to permutation of all selected materials borders',
         default=False
     )
     register_class(Deloop_OT_remove_edges)
@@ -301,6 +307,7 @@ def unregister(ui=True):
     unregister_class(Deloop_OT_desolve_edges)
     unregister_class(Deloop_OT_remove_edges)
     del Scene.deloop_pref_same_mats_border_similar
+
 
 if __name__ == "__main__":
     register()
