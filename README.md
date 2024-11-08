@@ -12,6 +12,9 @@ Blender version
 
 Version history
 -
+1.3.0
+- Added "Edgehog" button - select all edges adjoining to the current selection
+
 1.2.0
 - Added "Same Mats Border" button - select all edges that has the same two materials on linked faces, as selected
 

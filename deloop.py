@@ -15,7 +15,7 @@ bl_info = {
     "name": "Deloop",
     "description": "Remove edges with linked faces that all have the same material.",
     "author": "Nikita Akimov, Paul Kotelevets",
-    "version": (1, 2, 0),
+    "version": (1, 3, 0),
     "blender": (2, 79, 0),
     "location": "View3D > Tool panel > 1D > Deloop",
     "doc_url": "https://github.com/Korchy/1d_deloop",
@@ -179,6 +179,34 @@ class Deloop:
         bpy.ops.object.mode_set(mode=mode)
 
     @staticmethod
+    def edgehog(context, obj):
+        # select all edges adjoining to the current selection
+        obj = obj if obj else context.object
+        # current mode
+        mode = obj.mode
+        # switch to OBJECT mode
+        if obj.mode == 'EDIT':
+            bpy.ops.object.mode_set(mode='OBJECT')
+        # process current object
+        # mesh to bmesh
+        bm = bmesh.new()
+        bm.from_mesh(obj.data)
+        bm.verts.ensure_lookup_table()
+        bm.edges.ensure_lookup_table()
+        # for each selected vertex
+        for vertex in (_vertex for _vertex in bm.verts if _vertex.select):
+            # select all adjoining edges
+            for edge in vertex.link_edges:
+                edge.select = True
+        # save changed data to mesh
+        bm.to_mesh(obj.data)
+        bm.free()
+        # return mode back
+        bpy.ops.object.mode_set(mode=mode)
+        # switch to edge select mode
+        context.tool_settings.mesh_select_mode = (False, True, False)
+
+    @staticmethod
     def _deselect_all(bm):
         # remove all selection from edges and vertices in bmesh
         for face in bm.faces:
@@ -187,15 +215,6 @@ class Deloop:
             edge.select = False
         for vertex in bm.verts:
             vertex.select = False
-
-    # @staticmethod
-    # def _deselect_edge(bm_edge):
-    #     # deselect bmesh edge
-    #     # for face in bm_edge.link_faces:
-    #     #     face.select = False
-    #     bm_edge.select = False
-    #     for vert in bm_edge.verts:
-    #         vert.select = False
 
     @staticmethod
     def ui(layout, context):
@@ -221,6 +240,11 @@ class Deloop:
             icon='MOD_DECIM'
         )
         op.similar = context.scene.deloop_pref_same_mats_border_similar
+        # Edgehog
+        layout.operator(
+            operator='deloop.edgehog',
+            icon='LAMP_POINT'
+        )
 
 
 # OPERATORS
@@ -270,6 +294,20 @@ class Deloop_OT_same_mats_border(Operator):
         return {'FINISHED'}
 
 
+class Deloop_OT_edgehog(Operator):
+    bl_idname = 'deloop.edgehog'
+    bl_label = 'Edgehog'
+    bl_description = 'Select all edges adjoining to the current selection'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        Deloop.edgehog(
+            context=context,
+            obj=context.object
+        )
+        return {'FINISHED'}
+
+
 # PANELS
 
 class Deloop_PT_panel(Panel):
@@ -296,6 +334,7 @@ def register(ui=True):
     register_class(Deloop_OT_remove_edges)
     register_class(Deloop_OT_desolve_edges)
     register_class(Deloop_OT_same_mats_border)
+    register_class(Deloop_OT_edgehog)
     if ui:
         register_class(Deloop_PT_panel)
 
@@ -303,6 +342,7 @@ def register(ui=True):
 def unregister(ui=True):
     if ui:
         unregister_class(Deloop_PT_panel)
+    unregister_class(Deloop_OT_edgehog)
     unregister_class(Deloop_OT_same_mats_border)
     unregister_class(Deloop_OT_desolve_edges)
     unregister_class(Deloop_OT_remove_edges)
