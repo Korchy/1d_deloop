@@ -15,7 +15,7 @@ bl_info = {
     "name": "Deloop",
     "description": "Remove edges with linked faces that all have the same material.",
     "author": "Nikita Akimov, Paul Kotelevets",
-    "version": (1, 3, 0),
+    "version": (1, 3, 1),
     "blender": (2, 79, 0),
     "location": "View3D > Tool panel > 1D > Deloop",
     "doc_url": "https://github.com/Korchy/1d_deloop",
@@ -194,7 +194,7 @@ class Deloop:
         bm.verts.ensure_lookup_table()
         bm.edges.ensure_lookup_table()
         # for each selected vertex
-        for vertex in (_vertex for _vertex in bm.verts if _vertex.select):
+        for vertex in [_vertex for _vertex in bm.verts if _vertex.select]:
             # select all adjoining edges
             for edge in vertex.link_edges:
                 edge.select = True

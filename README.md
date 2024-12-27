@@ -12,6 +12,9 @@ Blender version
 
 Version history
 -
+1.3.1
+- Fixed but in the "Edgehog" tool
+
 1.3.0
 - Added "Edgehog" button - select all edges adjoining to the current selection
 
