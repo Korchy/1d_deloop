@@ -12,6 +12,10 @@ Blender version
 
 Version history
 -
+1.4.0
+- Added "Dering" functional from the "Dering" add-on
+- "Same mats border" moved to the "Material Select" add-on
+
 1.3.1
 - Fixed but in the "Edgehog" tool
 
